@@ -1,9 +1,9 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-const BlacklistTokenObject = require('../models/Blacklist');
+import BlacklistTokenObject from '../models/Blacklist.js';
 
 
-module.exports = (req, res, next) => {
+export default function(req, res, next){
     const token = req.headers['x-access-token'] || req.body.token || req.query.token;
     if (token) {
         // Check blacklist for token.

@@ -12,8 +12,8 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
 import OTPRouter from './routes/otp.js';
-// import loginRouter from './routes/login.js';
-// import logoutRouter from './routes/logout.js';
+import loginRouter from './routes/login.js';
+import logoutRouter from './routes/logout.js';
 
 const app = express();
 
@@ -27,8 +27,8 @@ import initDB from './helper/db.js';
 initDB();
 
 // Middleware
-// import verifyBaseToken from './middleware/basetoken.js';
-// import verifyTempToken from './middleware/temptoken.js';
+import verifyBaseToken from './middleware/basetoken.js';
+import verifyTempToken from './middleware/temptoken.js';
 
 
 // view engine setup
@@ -42,9 +42,9 @@ app.use(cookieParser());
 app.use(express.static( path.join(__dirname,  'public')));
 
 app.use('/otp', OTPRouter);
-// app.use('/login', verifyTempToken, loginRouter);
-// app.use('/api', verifyBaseToken);
-// app.use('/api/logout', logoutRouter);
+app.use('/login', verifyTempToken, loginRouter);
+app.use('/api', verifyBaseToken);
+app.use('/api/logout', logoutRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

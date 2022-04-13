@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 //Models
-const BlacklistTokenObject = require('../models/Blacklist');
+import BlacklistTokenObject from '../models/Blacklist.js';
 
 // Logout
 router.post('/', (req, res, next) => {
@@ -33,4 +33,4 @@ router.post('/', (req, res, next) => {
   });
 });
 
-module.exports = router;
+export default router;

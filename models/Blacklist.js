@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const BlacklistTokenSchema = new Schema({
@@ -6,4 +6,4 @@ const BlacklistTokenSchema = new Schema({
     token: String,
     createdAt:{ type: Date, default: Date.now }
 });
-module.exports = mongoose.model('blacklist', BlacklistTokenSchema);
+export default mongoose.model('blacklist', BlacklistTokenSchema);

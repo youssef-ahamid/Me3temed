@@ -1,11 +1,11 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 //Models
-const UserObject = require('../models/User');
+import UserObject from '../models/User.js';
 
 // Verify OTP and login.
 router.post('/', (req, res, next) => {
@@ -60,4 +60,4 @@ router.post('/', (req, res, next) => {
   });
 });
 
-module.exports = router;
+export default router;

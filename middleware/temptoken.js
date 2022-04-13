@@ -1,6 +1,6 @@
-const jwt=require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-module.exports=(req, res, next)=>{
+export default function(req, res, next){
     const token = req.headers['x-access-token'] || req.body.token || req.query.token;
     if (token){
         // Verify token.
