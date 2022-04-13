@@ -1,0 +1,23 @@
+{
+  "name": "me3temed",
+  "version": "1.0.0",
+  "description": "The final authentication solution",
+  "main": "me3temed.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youssef-ahamid/me3temed.git"
+  },
+  "keywords": [
+    "auth",
+    "otp"
+  ],
+  "author": "youssef-ahamid",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/youssef-ahamid/me3temed/issues"
+  },
+  "homepage": "https://github.com/youssef-ahamid/me3temed#readme"
+}
