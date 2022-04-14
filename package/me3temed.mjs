@@ -7,13 +7,14 @@ class Me3temed {
     }
 
     OTP(user = {}) {
+        this.user = user;
         fetch(`${this.api}/otp`, {
             method: "POST",
             headers: {
-                'Content-Type': 'application/json',Ï
+                'Content-Type': 'application/json',
             }, 
             mode: 'cors',
-            body: JSON.stringify(user),
+            body: JSON.stringify(this.user),
         }).then((data) => {
             this.#token = data.token;
         }).catch((err) => {

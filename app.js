@@ -17,6 +17,8 @@ import logoutRouter from './routes/logout.js';
 
 const app = express();
 
+import cors from 'cors';
+app.use(cors());
 
 //Config Files
 import env from 'dotenv';
