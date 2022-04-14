@@ -43,6 +43,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static( path.join(__dirname,  'public')));
 
+// headers
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  next();
+});
+
+
 app.use('/otp', OTPRouter);
 app.use('/login', verifyTempToken, loginRouter);
 app.use('/api', verifyBaseToken);
@@ -68,13 +76,6 @@ const PORT = process.env.PORT || 8000;
 
 app.get("/", (req, res) => {
   res.send("Me3temed");
-});
-
-// headers
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  next();
 });
 
 app.listen(PORT, () => {
