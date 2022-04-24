@@ -10,7 +10,7 @@ import UserObject from "../models/User.js";
 
 // Get OTP
 router.post("/", (req, res, next) => {
-  const { email } = req.body;
+  const { email, support } = req.body;
 
   // Generate an OTP
   const num = Math.floor(Math.random() * (999999 - 100000)) + 100000;
@@ -35,7 +35,11 @@ router.post("/", (req, res, next) => {
         let message = {
           to: email,
           subject: otp + " is your one time password.",
-          text: "Dear user. This is your one time password: " + otp,
+          template: 'OTP',
+          data: {
+            otp,
+            support
+          }
         };
         fetch(`https://zaagel.samuraisoftware.house/mail`, {
           method: "POST",
