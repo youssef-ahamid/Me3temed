@@ -47,8 +47,6 @@ router.post("/", (req, res, next) => {
           mode: "cors",
           body: JSON.stringify(message),
         }).then(() => {
-          console.log("otp:" + otp);
-
           // Prepare a token.
           const payload = {
             email,

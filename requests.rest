@@ -1,0 +1,12 @@
+POST http://localhost:8000/register/
+content-type: application/json
+
+{
+    "email": "hamada@nd.com",
+    "name": "youssef",
+    "password": "sike!"
+}
+
+###
+
+GET http://localhost:8000/api/

@@ -12,15 +12,18 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
 import OTPRouter from './routes/otp.js';
+import registerRouter from './routes/register.js';
 import loginRouter from './routes/login.js';
 import logoutRouter from './routes/logout.js';
 
 const app = express();
 
 import cors from 'cors';
-app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
 
-//Config Files
+// init env vairables
 import env from 'dotenv';
 env.config();
 
@@ -43,15 +46,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static( path.join(__dirname,  'public')));
 
-// headers
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  next();
-});
-
 
 app.use('/otp', OTPRouter);
+app.use('/register', registerRouter);
 app.use('/login', verifyTempToken, loginRouter);
 app.use('/api', verifyBaseToken);
 app.use('/api/logout', logoutRouter);
