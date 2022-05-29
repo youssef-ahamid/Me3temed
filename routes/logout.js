@@ -1,37 +1,23 @@
-import express from 'express';
-import verifyBaseToken from '../middleware/basetoken.js';
+import express from "express";
+import { s } from "../helper/response.js";
+import { tryCatch } from "../helper/utils.js";
+import verifyBaseToken from "../middleware/basetoken.js";
 const router = express.Router();
 
 //Models
-import BlacklistTokenObject from '../models/Blacklist.js';
+import BlacklistTokenObject from "../models/Blacklist.js";
 
 // Logout
-router.post('/', verifyBaseToken, (req, res, next) => {
-    // Add token to the blacklist. 
-  const newBlacklistToken = new BlacklistTokenObject({
+router.post("/", verifyBaseToken, (req, res, next) => {
+  tryCatch(async () => {
+    // Add token to the blacklist.
+    const newBlacklistToken = new BlacklistTokenObject({
       email: req.decoded_email,
-      token: req.token
-  });
-  const promise = newBlacklistToken.save();
-  promise.then((data) => {
-    if(!data){
-        res.status(500).json({
-            success: false,
-            message: "Something went wrong! Try again later!"
-        });
-    }else{
-        res.status(200).json({
-            success: true,
-            message: "You have been successfully logged out! Good bye!"
-        });
-    }
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong. Try again later."
+      token: req.token,
     });
-  });
+    const blacklisted = await newBlacklistToken.save();
+    s("Logout successful!", {}, res);
+  }, res);
 });
 
 export default router;
