@@ -1,63 +1,56 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
 
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import verifyTempToken from "./../middleware/temptoken.js";
+import verifyBaseToken from "./../middleware/basetoken.js";
 
-//Models
-import UserObject from '../models/User.js';
+// helpers
+import { e, s } from "../helper/response.js";
+import { findUserByEmail, tryCatch } from "../helper/utils.js";
+
+// Verify token and login.
+router.post("/", verifyBaseToken, async (req, res, next) => {
+  const email = req.decoded_email;
+  const user = await findUserByEmail(email);
+  if (!user) e(400, `user with email ${email} not found`, res);
+  else {
+    const data = await user.login();
+    s("Log in successful!", data, res);
+  }
+});
+
+// Verify password and login.
+router.post("/password", async (req, res, next) => {
+  const { password, email } = req.body;
+  const user = await findUserByEmail(email);
+  if (!user) e(400, `user with email ${email} not found`, res);
+  else
+    await tryCatch(async () => {
+      const validPass = await user.checkPass(password);
+      if (!validPass) e(401, "The password is incorrect!", res);
+      else {
+        const data = await user.login();
+        s("Log in successful!", data, res);
+      }
+    }, res);
+});
 
 // Verify OTP and login.
-router.post('/', (req, res, next) => {
-  const {
-    otp
-  } = req.body;
-  const decoded_email = req.decoded_email;
-  const promise = UserObject.findOne({
-    email: decoded_email
-  });
-  promise.then((data) => {
-    if (!data) {
-      res.status(500).json({
-        success: false,
-        message: "Oops! We are sorry! Something went wrong!"
-      });
-    } else {
-      bcrypt.compare(otp, data.otp).then((result) => {
-        if (!result) {
-          res.status(401).json({
-            success: false,
-            message: "Authentication failed. Wrong otp!"
-          });
-        } else {
-          // Prepare a token.
-          const payload = {
-            email: decoded_email
-          };
-          const token = jwt.sign(payload, process.env.APISECRETKEY, {
-            expiresIn: 86400 * 30 // This token expires 30 days later. 
-          });
-          res.status(200).json({
-            success: true,
-            message: "Welcome master!",
-            token: token
-          });
-        }
-      }).catch((err) => {
-        console.log(err);
-        res.status(500).json({
-          success: false,
-          message: "Something went wrong. Try again later."
-        });
-      });
-    }
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong. Try again later."
-    });
-  });
+router.post("/otp", verifyTempToken, async (req, res, next) => {
+  const { otp } = req.body;
+  const email = req.decoded_email;
+  const user = await findUserByEmail(email);
+  if (!user) e(400, `user with email ${email} not found`, res);
+  else
+    await tryCatch(async () => {
+      const validOTP = await user.checkOTP(otp);
+      if (!validOTP) e(401, "Incorrect OTP!", res);
+      else {
+        const data = await user.login();
+        if(!user.isEmailVerified) await user.verifyEmail();
+        s("Log in successful!", data, res);
+      }
+    }, res);
 });
 
 export default router;

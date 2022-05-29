@@ -2,11 +2,42 @@ POST http://localhost:8000/register/
 content-type: application/json
 
 {
-    "email": "hamada@nd.com",
+    "email": "hamada@hsjklkjl.com",
     "name": "youssef",
-    "password": "sike!"
+    "password": "Sike_123"
 }
 
 ###
 
-GET http://localhost:8000/api/
+POST http://localhost:8000/login/password/
+content-type: application/json
+
+{
+    "email": "hamada@ndassss.com",
+    "password": "Sike_123"
+}
+
+###
+
+POST http://localhost:8000/otp/
+content-type: application/json
+
+{
+    "email": "youssef@tutoruu.com"
+}
+
+###
+
+POST http://localhost:8000/login/otp/
+content-type: application/json
+x-access-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InlvdXNzZWZAdHV0b3J1dS5jb20iLCJpYXQiOjE2NTM4MjkyNDcsImV4cCI6MTY1MzgzMDE0N30.xV5b7TqqBvTaHkwOLaZVG5gQ6e1cvYDJ0t6FGFbXnao
+
+{
+    "otp": "556551"
+}
+
+###
+
+POST http://localhost:8000/logout/
+x-access-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhhbWFkYUBuZGFzc3NzLmNvbSIsImlhdCI6MTY1Mzg0MTI5NiwiZXhwIjoxNjU2NDMzMjk2fQ.7p2A6riD-aBMWf3GRDZnKyo-a3MeKzd02yEaj7bAjI4
+
