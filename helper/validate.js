@@ -37,10 +37,25 @@ export function hasSpecialCharacter(value, cb) {
     cb("Must contain at least one special character!");
 }
 
+export const PasswordValidation = (value) => {
+  return validate(
+    "password",
+    value,
+    required,
+    hasLowerCase,
+    hasDigit,
+    hasUpperCase,
+    hasSpecialCharacter
+  )
+}
+
+export const EmailValidation = (value) => {
+  return validate("email", value, required, isEmail)
+}
+
 export function validate(name, value, ...validations) {
   let errors = {};
   let errorFound = false;
-  console.log(validations);
   for (let i = 0; i < validations.length; i++) {
     if (!errorFound)
       validations[i](value, (err) => {

@@ -1,82 +1,50 @@
-import createError from 'http-errors';
-import path from 'path';
-import {fileURLToPath} from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-
-// 👇️ "/home/john/Desktop/javascript"
-const __dirname = path.dirname(__filename);
-
-import express from 'express';
-import cookieParser from 'cookie-parser';
-import logger from 'morgan';
-
-import OTPRouter from './routes/otp.js';
-import registerRouter from './routes/register.js';
-import loginRouter from './routes/login.js';
-import logoutRouter from './routes/logout.js';
-
+// -----------------Init App----------------- //
+import express from "express";
 const app = express();
-
-import cors from 'cors';
-app.use(cors({
-  origin: "*"
-}));
-
-// init env vairables
-import env from 'dotenv';
-env.config();
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`Me3temed live on port ${PORT}`);
+});
 
 // db connection
-import initDB from './helper/db.js';
-initDB();
+import db from "./helper/db.js"; 
+db.on("open", () => {
+  console.log("MongoDB Connected...");
+});
 
-// Middleware
-import verifyBaseToken from './middleware/basetoken.js';
-import verifyTempToken from './middleware/temptoken.js';
+// environment vairables
+import env from "dotenv";
+env.config();
 
+// ----------------Middleware---------------- //
+import cors from "cors";
+app.use(cors({ origin: "*" }));
 
-// view engine setup
-app.set('views', path.join(__dirname,  'views'));
-app.set('view engine', 'jade');
+import logger from "morgan";
+app.use(logger("dev"));
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+import cookieParser from "cookie-parser";
 app.use(cookieParser());
-app.use(express.static( path.join(__dirname,  'public')));
 
+// ------------------Routes------------------ //
+import OTPRouter from './routes/otp.js';
+app.use("/otp", OTPRouter);
 
-app.use('/otp', OTPRouter);
-app.use('/register', registerRouter);
-app.use('/login', verifyTempToken, loginRouter);
-app.use('/api', verifyBaseToken);
-app.use('/api/logout', logoutRouter);
+import registerRouter from './routes/register.js';
+app.use("/register", registerRouter);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+import loginRouter from './routes/login.js';
+app.use("/login", loginRouter);
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-const PORT = process.env.PORT || 8000;
+import logoutRouter from './routes/logout.js';
+app.use("/logout", logoutRouter);
 
 app.get("/", (req, res) => {
   res.send("Me3temed");
-});
-
-app.listen(PORT, () => {
-  console.log(`Me3temed live on port ${PORT}`);
 });
 
 export default app;
