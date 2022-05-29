@@ -1,11 +1,12 @@
 import express from 'express';
+import verifyBaseToken from '../middleware/basetoken.js';
 const router = express.Router();
 
 //Models
 import BlacklistTokenObject from '../models/Blacklist.js';
 
 // Logout
-router.post('/', (req, res, next) => {
+router.post('/', verifyBaseToken, (req, res, next) => {
     // Add token to the blacklist. 
   const newBlacklistToken = new BlacklistTokenObject({
       email: req.decoded_email,
