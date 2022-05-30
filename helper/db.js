@@ -5,7 +5,10 @@ env.config();
 import mongoose from "mongoose";
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true });
 
-//Get the default connection
+
+/**
+ * @description the default mongoose connection
+ */
 const db = mongoose.connection;
 
 //Bind connection to error event (to get notification of connection errors)

@@ -16,10 +16,12 @@ const UserSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+UserSchema.methods.genToken = async function (time = 900) {
+  return jwt.sign({ email: this.email }, process.env.APISECRETKEY, { expiresIn: time });
+}
+
 UserSchema.methods.login = async function () {
-  const token = jwt.sign({ email: this.email }, process.env.APISECRETKEY, {
-    expiresIn: 86400 * 30, // This token expires 30 days later.
-  });
+  const token = this.genToken(86400 * 30) // this token expires 30 days later
 
   // update last login timestamp
   this.lastLoggedIn = new Date();
@@ -48,4 +50,4 @@ UserSchema.methods.addSocialLogin = async function (from, data) {
     await this.save();
 };
 
-export default mongoose.model("user", UserSchema);
+export default mongoose.model("User", UserSchema);

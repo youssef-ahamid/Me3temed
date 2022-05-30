@@ -1,7 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 /**
  * @description Function to decode Google OAuth token
- * @param token: string
+ * @param token the OAuth token obtained from the sign in button
  * @returns ticket object
  */
 export const getDecodedOAuthJwtGoogle = async (token) => {
