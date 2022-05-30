@@ -41,4 +41,11 @@ UserSchema.methods.verifyEmail = async function () {
     await this.save();
 };
 
+UserSchema.methods.addSocialLogin = async function (from, data) {
+    if(!this.meta.socials || !this.meta.socials.length) this.meta.socials = [];
+
+    this.meta.socials.push({ from, data });
+    await this.save();
+};
+
 export default mongoose.model("user", UserSchema);

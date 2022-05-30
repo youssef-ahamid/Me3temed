@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+      function handleCredentialResponse(response) {
+        console.log(response);
+        const { name, picture, email, email_verified } = {{ decode }}(response.credential);
+
+        fetch("http://localhost:8000/register/social", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          mode: "cors",
+          body: JSON.stringify({
+            name,
+            email,
+            img: picture,
+            isEmailVerified: email_verified,
+            origin: "google",
+          }),
+        });
+      }
+      window.onload = function () {
+        google.accounts.id.initialize({
+          client_id: "{{ client_id }}",
+          callback: handleCredentialResponse,
+        });
+        google.accounts.id.renderButton(
+          document.getElementById("buttonDiv"),
+          { theme: "outline", size: "large" } // customization attributes
+        );
+        google.accounts.id.prompt(); // also display the One Tap dialog
+      };
+    </script>
+    <div id="buttonDiv"></div>
+  </body>
+</html>
