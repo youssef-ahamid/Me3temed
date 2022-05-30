@@ -1,8 +1,8 @@
 import express from "express";
-import { s } from "../helper/response.js";
-import { tryCatch } from "../helper/utils.js";
-import verifyBaseToken from "../middleware/basetoken.js";
 const router = express.Router();
+
+import { s, tryCatch } from "../helper/utils.js";
+import verifyBaseToken from "../middleware/basetoken.js";
 
 //Models
 import BlacklistTokenObject from "../models/Blacklist.js";
@@ -15,7 +15,7 @@ router.post("/", verifyBaseToken, (req, res, next) => {
       email: req.decoded_email,
       token: req.token,
     });
-    const blacklisted = await newBlacklistToken.save();
+    await newBlacklistToken.save();
     s("Logout successful!", {}, res);
   }, res);
 });
