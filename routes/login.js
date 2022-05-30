@@ -5,8 +5,8 @@ import verifyTempToken from "./../middleware/temptoken.js";
 import verifyBaseToken from "./../middleware/basetoken.js";
 
 // helpers
-import { e, s } from "../helper/response.js";
-import { findUserByEmail, tryCatch } from "../helper/utils.js";
+import { findUserByEmail, e, s, tryCatch } from "../helper/utils.js";
+import zaagel from "zaagel";
 
 // Verify token and login.
 router.post("/", verifyBaseToken, async (req, res, next) => {
@@ -14,6 +14,36 @@ router.post("/", verifyBaseToken, async (req, res, next) => {
   const user = await findUserByEmail(email);
   if (!user) e(400, `user with email ${email} not found`, res);
   else {
+    const data = await user.login();
+    s("Log in successful!", data, res);
+  }
+});
+
+// Verify token in link and login.
+router.get("/link", verifyBaseToken, async (req, res, next) => {
+  const email = req.decoded_email;
+  const user = await findUserByEmail(email);
+  if (!user) e(400, `user with email ${email} not found`, res);
+  else {
+    const data = await user.login();
+    s("Log in successful!", data, res);
+  }
+});
+
+// send a link to login to a user's email
+router.post("/link", async (req, res, next) => {
+  const { email } = req.body;
+  const user = await findUserByEmail(email);
+  if (!user) e(400, `user with email ${email} not found. please register instead.`, res);
+  else {
+    const token = user.genToken();
+    const link = `http://localhost:8000/login/link?token=${token}`
+    zaagel.mail({
+      to: email,
+      subject: "Log in with link",
+      template: "login-link",
+      data: { link }
+    })
     const data = await user.login();
     s("Log in successful!", data, res);
   }
