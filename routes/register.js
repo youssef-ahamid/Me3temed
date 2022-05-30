@@ -6,10 +6,9 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 
 import { PasswordValidation, EmailValidation } from "../helper/validate.js";
-import { e, s } from "../helper/response.js";
-import { findUserByEmail, tryCatch } from "../helper/utils.js";
+import { findUserByEmail, e, s, tryCatch } from "../helper/utils.js";
 
-// Register a new user User
+// Register a new user
 router.post("/", (req, res) => {
   const { email, password, name, img, meta } = req.body;
 
@@ -29,6 +28,34 @@ router.post("/", (req, res) => {
       const newUser = new User({
         email,
         passwordHash,
+        name,
+        img,
+        meta,
+      });
+      const savedUser = await newUser.save();
+      s("User created!", { user: savedUser._doc }, res);
+    }, res);
+  }
+});
+
+// Register a new passwordless user
+router.post("/", (req, res) => {
+  const { email, name, img, meta } = req.body;
+
+  // Validate
+  let errors = [EmailValidation(email)].filter(
+    (e) => !!e // remove null errors
+  );
+  if (errors.length > 0) return e(400, "Invalid entries!", res, { errors });
+  else {
+    tryCatch(async () => {
+      // Check if user exists
+      const user = await findUserByEmail(email);
+      if (!!user) return e(409, "User already exists!", res);
+
+      // Create user
+      const newUser = new User({
+        email,
         name,
         img,
         meta,
