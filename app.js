@@ -2,6 +2,12 @@
 // -----------------Init App----------------- //
 import express from "express";
 const app = express();
+
+import expressLiquid from 'express-liquid'; // use liquid as
+app.set('view engine', 'liquid');           // the templating engine
+app.engine('liquid', expressLiquid());
+app.use(expressLiquid.middleware);
+
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Me3temed live on port ${PORT}`);
@@ -43,8 +49,8 @@ app.use("/login", loginRouter);
 import logoutRouter from './routes/logout.js';
 app.use("/logout", logoutRouter);
 
-app.get("/", (req, res) => {
-  res.send("Me3temed");
-});
+import socialRouter from './routes/social.js';
+app.use("/social", socialRouter);
+
 
 export default app;
