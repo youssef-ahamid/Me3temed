@@ -14,6 +14,7 @@ const UserSchema = new Schema({
   otp: { type: String },
   lastLoggedIn: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
+  apps: [{ type: mongoose.Types.ObjectId, ref: "App", scoped: Object }]
 });
 
 UserSchema.methods.genToken = async function (time = 900) {
@@ -44,7 +45,10 @@ UserSchema.methods.verifyEmail = async function () {
 };
 
 UserSchema.methods.addSocialLogin = async function (from, data) {
-    if(!this.meta.socials || !this.meta.socials.length) this.meta.socials = [];
+    if (!this.meta) this.meta = { socials: [] }
+    else if(!this.meta.socials || !this.meta.socials.length) this.meta.socials = [];
+
+    console.log(this.meta)
 
     this.meta.socials.push({ from, data });
     await this.save();
