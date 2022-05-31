@@ -30,6 +30,19 @@ app.use(cors({ origin: "*" }));
 import logger from "morgan";
 app.use(logger("dev"));
 
+import session from "express-session";
+app.use(session({
+  secret: 'keyboard dog named feeno',
+  resave: true,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 24 * 60 * 60 * 365 * 1000
+  }
+}));
+
+import passport from "passport";
+app.use(passport.authenticate('session'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
