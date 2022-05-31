@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { e, tryCatch } from "../helper/utils";
+import { e, tryCatch } from "../helper/utils.js";
 
 export default function (req, res, next) {
   const token = req.headers["x-access-token"] || req.body.token || req.query.token;
