@@ -65,5 +65,8 @@ app.use("/logout", logoutRouter);
 import socialRouter from './routes/social.js';
 app.use("/social", socialRouter);
 
+import adminRouter from './routes/admin.js';
+app.use("/admin", adminRouter);
+
 
 export default app;

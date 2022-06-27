@@ -10,7 +10,7 @@ import { findUserByEmail, e, s, tryCatch } from "../helper/utils.js";
 
 // Register a new user
 router.post("/", (req, res) => {
-  const { email, password, name, img, meta } = req.body;
+  const { email, password, name, img, meta, app } = req.body;
 
   // Validate
   let errors = [PasswordValidation(password), EmailValidation(email)].filter(
@@ -33,14 +33,15 @@ router.post("/", (req, res) => {
         meta,
       });
       const savedUser = await newUser.save();
-      s("User created!", { user: savedUser._doc }, res);
+      const userWithApp = await savedUser.addApp(app);
+      s("User created!", { user: userWithApp._doc }, res);
     }, res);
   }
 });
 
 // Register a new passwordless user
-router.post("/", (req, res) => {
-  const { email, name, img, meta } = req.body;
+router.post("/passwordless", (req, res) => {
+  const { email, name, img, meta, app } = req.body;
 
   // Validate
   let errors = [EmailValidation(email)].filter(
@@ -50,56 +51,28 @@ router.post("/", (req, res) => {
   else {
     tryCatch(async () => {
       // Check if user exists
-      const user = await findUserByEmail(email);
-      if (!!user) return e(409, "User already exists!", res);
+      let user = await findUserByEmail(email);
+      if (!!user && user.apps.includes(app)) return e(409, "User already exists on this app!", res);
+      else if (!user) {
+        // Create user
+        user = new User({
+          email,
+          name,
+          img,
+          meta,
+          apps: []
+        });
 
-      // Create user
-      const newUser = new User({
-        email,
-        name,
-        img,
-        meta,
-      });
-      const savedUser = await newUser.save();
-      s("User created!", { user: savedUser._doc }, res);
+        user.apps = [app]
+        user = await user.save();
+        s("User created!", { user: user._doc }, res);
+      } else {
+        user.apps.push(app)
+        user = await user.save()
+        s(`User joined app ${app}!`, { user: user._doc }, res);
+      }
     }, res);
   }
-});
-
-// Register a new user from social login
-router.post("/social", (req, res) => {
-  const { email, name, img, isEmailVerified, origin, data } = req.body;
-
-  tryCatch(async () => {
-    // Check if user exists
-    const user = await findUserByEmail(email);
-    if (!!user) {
-      if (
-        !!user.meta.socials &&
-        user.meta.socials.map((social) => social.from).includes(origin)
-      )
-        s(
-          `User already registered this social login. Nothing new happened.`,
-          { user },
-          res
-        );
-      else {
-        await user.addSocialLogin(origin, data);
-        if (isEmailVerified && !user.isEmailVerified) await user.verifyEmail;
-        s(`User updated! Added a social login from ${origin}`, { user }, res);
-      }
-    } else {
-      // Create user
-      const newUser = new User({
-        email,
-        isEmailVerified,
-        name,
-        img,
-      });
-      const savedUser = await newUser.save();
-      s("User created!", { user: savedUser._doc }, res);
-    }
-  }, res);
 });
 
 export default router;

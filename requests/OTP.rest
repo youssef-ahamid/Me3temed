@@ -1,0 +1,18 @@
+POST http://localhost:8000/otp/
+content-type: application/json
+
+{
+    "app": "62a33f19049400925d931626",
+    "email": "youssef@tutoruu.com"
+}
+
+###
+
+POST http://localhost:8000/login/otp/
+content-type: application/json
+x-access-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InlvdXNzZWZAdHV0b3J1dS5jb20iLCJpYXQiOjE2NTQ4NjUzNzgsImV4cCI6MTY1NDg2NjI3OH0.bmnhoL-cl2NjXtNpPRTx6U8ZLjo08GCcakA3z7AwyUI
+
+{
+    "otp": "181515",
+    "email": "youssef@tutoruu.com"
+}

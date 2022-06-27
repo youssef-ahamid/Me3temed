@@ -1,0 +1,20 @@
+POST http://localhost:8000/login/link
+content-type: application/json
+
+{
+    
+    "email": "youssef@getbrewsy.com",
+    "app": "62a33f19049400925d931626"
+}
+
+###
+
+POST http://localhost:8000/register/passwordless
+content-type: application/json
+
+{
+    "email": "youssef@getbrewsy.com",
+    "name": "youssef",
+    "app": "62a33f19049400925d931626"
+}
+

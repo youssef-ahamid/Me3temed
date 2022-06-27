@@ -1,51 +1,39 @@
 import express from "express";
 const router = express.Router();
 
+import mongoose from "mongoose";
+
 import verifyTempToken from "./../middleware/temptoken.js";
 import verifyBaseToken from "./../middleware/basetoken.js";
 
+import jwt from "jsonwebtoken";
+import env from "dotenv";
+env.config();
+
 // helpers
-import { findUserByEmail, e, s, tryCatch } from "../helper/utils.js";
-import zaagel from "zaagel";
+import {
+  findUserByEmail,
+  e,
+  s,
+  tryCatch,
+  createSocialLogin,
+} from "../helper/utils.js";
+import zaagel from "../zaagel.js";
 
-import passport from "passport";
-import oauth20 from "passport-google-oauth20";
+import { encodeURI } from "../helper/utils.js";
+import passport from "../helper/passport.js";
 
-passport.serializeUser(function (user, cb) {
-  process.nextTick(function () {
-    cb(null, { email: user.email, name: user.name });
-  });
-});
-
-passport.deserializeUser(function (user, cb) {
-  process.nextTick(function () {
-    return cb(null, user);
-  });
-});
-
-const GoogleStrategy = oauth20.Strategy;
-
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID:
-        "1086286750475-gqq1jk1jdepfkjbhronp81omr04g0cq0.apps.googleusercontent.com",
-      clientSecret: "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",
-      callbackURL: "http://localhost:8000/login/google-callback/",
-    },
-    function (accessToken, refreshToken, profile, cb) {
-      const { name, emails, displayName, photos } = profile;
-      const googleUser = {
-        email: emails[0].value,
-        isEmailVerified: emails[0].verified,
-        name: displayName,
-        img: photos[0].value,
-        data: { names: name },
-        refreshToken,
-      };
-      return cb(null, { googleUser, accessToken });
-    }
-  )
+router.get(
+  "/facebook",
+  passport.authenticate("facebook", { scope: ["public_profile", "email"] })
+);
+router.get(
+  "/facebook-callback",
+  passport.authenticate("facebook", { failureRedirect: "/login" }),
+  async function (req, res) {
+    // Successful authentication, redirect home.
+    await createSocialLogin("facebook", req.user.facebookUser, res);
+  }
 );
 
 router.get(
@@ -58,44 +46,18 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   async function (req, res) {
     // Successful authentication, upsert user
-    const { googleUser } = req.user;
-    const origin = "google";
-
-    tryCatch(async () => {
-      // Check if user exists
-      const user = await findUserByEmail(googleUser.email);
-      if (!!user) {
-        if (
-          !!user.meta &&
-          !!user.meta.socials &&
-          user.meta.socials.map((social) => social.from).includes(origin)
-        )
-          s(
-            `User already registered this social login. Nothing new happened.`,
-            { user },
-            res
-          );
-        else {
-          await user.addSocialLogin(origin, googleUser.data);
-          if (googleUser.isEmailVerified && !user.isEmailVerified)
-            await user.verifyEmail();
-          s(`User updated! Added a social login from ${origin}`, { user }, res);
-        }
-      } else {
-        // Create user
-        const newUser = new User(googleUser);
-        const savedUser = await newUser.save();
-        s("User created!", { user: savedUser._doc }, res);
-      }
-    }, res);
-    // res.send("/success");
+    await createSocialLogin("google", req.user.googleUser, res);
   }
 );
 
 router.get("/", function (req, res, next) {
   res.render("login", {
-    signInOptions: ["google"],
+    signInOptions: ["google", "facebook"],
   });
+});
+
+router.get("/magic-link", function (req, res, next) {
+  res.render("loginWithLink");
 });
 
 // Verify token in link and login.
@@ -105,28 +67,46 @@ router.get("/link", verifyBaseToken, async (req, res, next) => {
   if (!user) e(400, `user with email ${email} not found`, res);
   else {
     const data = await user.login();
-    s("Log in successful!", data, res);
+    res.header("x-access-token", data.token);
+    res.redirect(`${req.query.redirect_url}?token=${data.token}`);
   }
 });
 
 // send a link to login to a user's email
 router.post("/link", async (req, res, next) => {
-  const { email } = req.body;
+  const { email, redirect_url } = req.body;
+
+  if (!email || !redirect_url)
+    return e(
+      400,
+      `
+        Missing fields!
+        required: email, redirect_url
+      `,
+      res
+    );
+
   const user = await findUserByEmail(email);
   if (!user)
-    e(400, `user with email ${email} not found. please register instead.`, res);
-  else {
-    const token = user.genToken();
-    const link = `http://localhost:8000/login/link?token=${token}`;
-    zaagel.mail({
-      to: email,
-      subject: "Log in with link",
-      template: "login-link",
-      data: { link },
-    });
-    const data = await user.login();
-    s("Log in successful!", data, res);
-  }
+    return e(
+      400,
+      `user with email ${email} not found. please register instead.`,
+      res
+    );
+
+  const token = jwt.sign({ email: email }, process.env.APISECRETKEY, {
+    expiresIn: 3600 * 24 * 30, // 30 days
+  });
+
+  const link = `http://localhost:8000/login/link?token=${token}&redirect_url=${redirect_url}`;
+  zaagel.mail({
+    to: email,
+    subject: "Log in with link",
+    template: "login-link",
+    body: { link },
+  });
+
+  return s(`Log in link sent to ${email}`, {}, res);
 });
 
 // Verify password and login.

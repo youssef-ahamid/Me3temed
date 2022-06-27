@@ -24,13 +24,15 @@
     "liquidjs": "^9.37.0",
     "mongoose": "^5.3.4",
     "morgan": "~1.9.0",
-    "node-fetch": "^3.2.3",
+    "node-fetch": "^3.2.6",
     "nodemailer": "^4.6.8",
     "passport": "^0.6.0",
+    "passport-facebook": "^3.0.0",
     "passport-google-oauth": "^2.0.0",
     "zaagel": "^0.2.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.16",
+    "tailwindcss": "^3.1.3"
   }
 }

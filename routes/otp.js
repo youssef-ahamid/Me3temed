@@ -2,15 +2,17 @@ import express from "express";
 const router = express.Router();
 
 import bcrypt from "bcryptjs";
-
+import jwt from "jsonwebtoken";
+import env from "dotenv";
+env.config();
 //Models
 import UserObject from "../models/User.js";
-import zaagel from "zaagel";
-import { s } from "../helper/utils.js";
+import zaagel from "../zaagel.js";
+import { findUserByEmail, s } from "../helper/utils.js";
 
 // Get OTP
 router.post("/", async (req, res, next) => {
-  const { email, support } = req.body;
+  const { email, name, app, support } = req.body;
 
   // Generate an OTP
   const num = Math.floor(Math.random() * (999999 - 100000)) + 100000;
@@ -19,11 +21,12 @@ router.post("/", async (req, res, next) => {
   // Get hash and save to the database.
   const hash = await bcrypt.hash(otp, 10);
 
-  const user = await UserObject.updateOne(
-    { email },
-    { email, otp: hash },
-    { upsert: true }
-  );
+  let user = await findUserByEmail(email);
+  if (!user) user = new UserObject({ email, name, app });
+  user.otp = hash;
+  user = await user.save();
+
+  console.log(user)
 
   zaagel.mail({
     to: email,
@@ -35,7 +38,9 @@ router.post("/", async (req, res, next) => {
     },
   });
 
-  const token = user.genToken();
+  const token = jwt.sign({ email: user.email }, process.env.TEMPORARILYTOKENKEY, {
+    expiresIn: 900,
+  });
   s(`OTP email sent to ${email}`, { token }, res);
 });
 

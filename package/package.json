@@ -19,5 +19,33 @@
   "bugs": {
     "url": "https://github.com/youssef-ahamid/me3temed/issues"
   },
-  "homepage": "https://github.com/youssef-ahamid/me3temed#readme"
+  "homepage": "https://github.com/youssef-ahamid/me3temed#readme",
+  "hjello": {
+    "success": true,
+    "message": "User updated! Added a social login from google",
+    "user": {
+      "isEmailVerified": true,
+      "apps": [],
+      "_id": "629683ac03d467593eba0ee3",
+      "email": "mafattah931@gmail.com",
+      "passwordHash": "$2a$10$u.p7HgWXYFq2SRc2HViH3uRHWRsw/H2Y60iv02hVwW.eghGxdYTe.",
+      "name": "fattah",
+      "lastLoggedIn": "2022-05-31T21:07:56.331Z",
+      "createdAt": "2022-05-31T21:07:56.331Z",
+      "__v": 0,
+      "meta": {
+        "socials": [
+          {
+            "from": "google",
+            "data": {
+              "names": {
+                "familyName": "Fattah",
+                "givenName": "Mohamed"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
 }

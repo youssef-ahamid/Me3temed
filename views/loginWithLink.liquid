@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark:bg-gray-900">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -9,10 +9,8 @@
   </head>
   <body>
     <main class="h-screen w-full flex items-center justify-center">
-      <div class="mx-auto my-auto max-h-fit p-6 rounded-xl ring-2 ring-blue-700 w-full max-w-fit flex flex-col space-y-4">
-        <h1 class="text-4xl font-bold text-gray-900 dark:text-white">Sign in</h1>
-        {% if signInOptions contains "google" %} {% include 'snippets/google' %}
-        {% if signInOptions contains "facebook" %} {% include 'snippets/facebook' %} {% endif %}
+      <div class="mx-auto my-auto max-h-fit px-6 py-10 max-w-[90%] rounded-xl ring-2 ring-blue-700 shadow-lg shadow-blue-700 hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-600 hover:ring-purple-600 transition duration-300 ease-out w-full md:max-w-2xl flex flex-col space-y-2 dark:bg-gray-900">
+        <h1 class="text-xl md:text-3xl font-bold text-center text-gray-900 dark:text-white pb-6">Sign in to KLIK</h1>
         {% include 'snippets/link' %}
       </div>
     </main>
