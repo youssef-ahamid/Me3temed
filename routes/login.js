@@ -98,7 +98,7 @@ router.post("/link", async (req, res, next) => {
     expiresIn: 3600 * 24 * 30, // 30 days
   });
 
-  const link = `http://localhost:8000/login/link?token=${token}&redirect_url=${redirect_url}`;
+  const link = `https://me3temed.samuraisoftware.house/login/link?token=${token}&redirect_url=${redirect_url}`;
   zaagel.mail({
     to: email,
     subject: "Log in with link",
