@@ -103,7 +103,7 @@ router.post("/link", async (req, res, next) => {
     to: email,
     subject: "Log in with link",
     template: "login-link",
-    body: { link },
+    data: { link },
   });
 
   return s(`Log in link sent to ${email}`, {}, res);
