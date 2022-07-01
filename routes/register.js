@@ -52,8 +52,8 @@ router.post("/passwordless", (req, res) => {
     tryCatch(async () => {
       // Check if user exists
       let user = await findUserByEmail(email);
-      if (!!user && user.apps.includes(app)) return e(409, "User already exists on this app!", res);
-      else if (!user) {
+      // if (!!user && user.apps.includes(app)) return e(409, "User already exists on this app!", res);
+      if (!user) {
         // Create user
         user = new User({
           email,
