@@ -57,8 +57,8 @@ router.get("/", function (req, res, next) {
 });
 
 router.get("/magic-link", function (req, res, next) {
-  const { app_name } = req.query;
-  res.render("loginWithLink", app_name);
+  const { app_name, redirect_url } = req.query;
+  res.render("loginWithLink", { app_name, redirect_url });
 });
 
 // Verify token in link and login.
@@ -76,6 +76,7 @@ router.get("/link", verifyBaseToken, async (req, res, next) => {
 // send a link to login to a user's email
 router.post("/link", async (req, res, next) => {
   const { email, redirect_url, app_name } = req.body;
+  console.log({ email, redirect_url, app_name })
 
   if (!email || !redirect_url)
     return e(
@@ -102,7 +103,7 @@ router.post("/link", async (req, res, next) => {
   const link = `https://me3temed.samuraisoftware.house/login/link?token=${token}&redirect_url=${redirect_url}`;
   zaagel.mail({
     to: email,
-    subject: `Log in ${app_name? `to ${app_name}`: 'with link'}`,
+    subject: `Log in to ${app_name? app_name: 'app with link'}`,
     template: "login-link",
     data: { link },
   });

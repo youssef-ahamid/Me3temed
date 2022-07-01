@@ -9,7 +9,13 @@
         id="redirect_url" 
         type="hidden" 
         name="redirect_url"
-        value="https://klik-staging.vercel.app/profile"
+        value=redirect_url
+    %}
+    {% include 'snippets/input' 
+        id="app_name" 
+        type="hidden" 
+        name="app_name"
+        value=app_name
     %}
     <div onclick="submit()">
         {% include 'snippets/button'
@@ -19,19 +25,17 @@
         %}
     </div>
     <p id="success-message" class="absolute bottom-1/2 left-1/2 -translate-x-1/2 w-full max-w-[90%] translate-y-1/2 pointer-events-none opacity-0 text-gray-900 dark:text-white text-center whitespace-pre-line text-base md:text-lg transition duration-500 ease-in delay-500"/>
-    <button type="button" onclick="reopen" class="absolute bottom-5 left-1/2 -translate-x-1/2 text-blue-700 group-hover:text-purple-600 font-bold transition duration-300 ease-out text-base md:text-lg">
-        Not you? Edit email
-    </button>
-    
 </div>
 
 <script>
     function submit(e) {
+        const app_name = "{{ app_name }}";
         const emailInput = document.getElementById("email")
         const button = document.getElementById("sign-in-with-link-button")
         const message = document.getElementById("success-message")
         let data = {
             redirect_url: document.getElementById("redirect_url").value,
+            app_name: document.getElementById("app_name").value,
             email: emailInput.value
         }
 
@@ -55,7 +59,7 @@
             message.classList.remove('opacity-0')
             message.innerHTML = `
             <span class="font-bold pb-1">Your magic link is on it's way!</span>
-            Check your inbox and follow the link in the email we just sent to ${data.email} to log into KLIK :)
+            Check your inbox and follow the link in the email we just sent to ${data.email} to log into ${app_name} :)
             `
         })
         
