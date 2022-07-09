@@ -24,7 +24,7 @@
             text="sign in with magic link"
         %}
     </div>
-    <p id="success-message" class="absolute bottom-1/2 left-1/2 -translate-x-1/2 w-full max-w-[90%] translate-y-1/2 pointer-events-none opacity-0 text-gray-900 dark:text-white text-center whitespace-pre-line text-base md:text-lg transition duration-500 ease-in delay-500"/>
+    <p id="success-message" class="absolute bottom-1/2 left-1/2 -translate-x-1/2 w-full max-w-[90%] translate-y-1/2 pointer-events-none opacity-0 text-gray-900 dark:text-white text-center whitespace-pre-line text-base md:text-lg transition duration-500 ease-in delay-500 font-bold"/>
 </div>
 
 <script>
@@ -57,10 +57,7 @@
             button.classList.add('opacity-0')
             emailInput.parentElement.getElementsByTagName("label")[0].classList.add('opacity-0')
             message.classList.remove('opacity-0')
-            message.innerHTML = `
-            <span class="font-bold pb-1">Your magic link is on it's way!</span>
-            Check your inbox and follow the link in the email we just sent to ${data.email} to log into ${app_name} :)
-            `
+            message.textContent = "Login link sent! Check your inbox"
         })
         
     }
