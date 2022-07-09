@@ -124,3 +124,10 @@ export const encodeURI = function(obj, prefix) {
   }
   return str.join("&");
 }
+
+import jwt from "jsonwebtoken";
+export const genToken = async function (payload = {}, time = 900) {
+  return jwt.sign(payload, process.env.APISECRETKEY, {
+    expiresIn: time,
+  });
+};

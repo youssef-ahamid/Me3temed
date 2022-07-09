@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 
 import { PasswordValidation, EmailValidation } from "../helper/validate.js";
-import { findUserByEmail, e, s, tryCatch } from "../helper/utils.js";
+import { findUserByEmail, e, s, tryCatch, genToken } from "../helper/utils.js";
 
 // Register a new user
 router.post("/", (req, res) => {
@@ -52,6 +52,8 @@ router.post("/passwordless", (req, res) => {
     tryCatch(async () => {
       // Check if user exists
       let user = await findUserByEmail(email);
+      let token = await genToken({ email }, 60 * 60 * 24 * 3)
+
       // if (!!user && user.apps.includes(app)) return e(409, "User already exists on this app!", res);
       if (!user) {
         // Create user
@@ -65,9 +67,9 @@ router.post("/passwordless", (req, res) => {
 
         user.apps = [app]
         user = await user.save();
-        s("User created!", { user: user._doc }, res);
+        s("User created!", { user: user._doc, token }, res);
       } else {
-        user.apps.push(app)
+        if (!!app) user.apps.push(app)
         user = await user.save()
         s(`User joined app ${app}!`, { user: user._doc }, res);
       }
