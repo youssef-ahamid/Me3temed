@@ -8,7 +8,7 @@ import User from "../models/User.js";
 import { PasswordValidation, EmailValidation } from "../helper/validate.js";
 import { findUserByEmail, e, s, tryCatch, genToken } from "../helper/utils.js";
 
-// Register a new user
+// Register a new user with email and password
 router.post("/password", (req, res) => {
   const { email, password, name, img, meta, app } = req.body;
 
@@ -19,9 +19,9 @@ router.post("/password", (req, res) => {
   if (errors.length > 0) return e(400, "Invalid entries!", res, { errors });
   else {
     tryCatch(async () => {
-      // Check if user exists
       const passwordHash = await bcrypt.hash(password, 10);
       
+      // Check if user exists
       let user = await findUserByEmail(email);
       if (!!user && !!user.passwordHash) return e(409, "User already exists!", res);
       else if (!!user) user.passwordHash = passwordHash
@@ -37,8 +37,9 @@ router.post("/password", (req, res) => {
       }
       
       user = await user.save();
+      const data = await user.login();
 
-      s("User created!", { user: user._doc }, res);
+      s("User created!", data, res);
     }, res);
   }
 });
