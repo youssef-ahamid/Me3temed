@@ -130,7 +130,7 @@ router.post("/password", async (req, res, next) => {
   if (!user) e(400, `user with email ${email} not found`, res);
   else
     await tryCatch(async () => {
-      if (user.passwordHash === null || user.passwordHash.length < 1) return e(403, "User not registered with password. Please add a password before logging in.", res);
+      if (user.passwordHash === null || typeof user.passwordHash === "undefined") return e(403, "User not registered with password. Please add a password before logging in.", res);
 
       const validPass = await user.checkPass(password);
       if (!validPass) e(401, "The password is incorrect!", res);
