@@ -73,6 +73,18 @@ router.get("/link", verifyBaseToken, async (req, res, next) => {
   }
 });
 
+// Verify token and login.
+router.post("/", verifyBaseToken, async (req, res, next) => {
+  const email = req.decoded_email;
+  const user = await findUserByEmail(email);
+  if (!user) e(400, `user with email ${email} not found`, res);
+  else {
+    const data = await user.login();
+    res.header("x-access-token", data.token);
+    s("Log in successful", data, res)
+  }
+});
+
 // send a link to login to a user's email
 router.post("/link", async (req, res, next) => {
   const { email, redirect_url, app_name } = req.body;
@@ -118,8 +130,8 @@ router.post("/password", async (req, res, next) => {
   if (!user) e(400, `user with email ${email} not found`, res);
   else
     await tryCatch(async () => {
-      if (!user.passwordHash) return e(404, "User not registered with password. Please add a password before logging in.", res);
-      
+      if (!user.passwordHash) return e(401, "User not registered with password. Please add a password before logging in.", res);
+
       const validPass = await user.checkPass(password);
       if (!validPass) e(401, "The password is incorrect!", res);
       else {
