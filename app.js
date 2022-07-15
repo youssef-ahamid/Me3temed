@@ -59,6 +59,9 @@ app.use("/register", registerRouter);
 import loginRouter from './routes/login.js';
 app.use("/login", loginRouter);
 
+import passwordRouter from './routes/password.js';
+app.use("/password", passwordRouter);
+
 import logoutRouter from './routes/logout.js';
 app.use("/logout", logoutRouter);
 

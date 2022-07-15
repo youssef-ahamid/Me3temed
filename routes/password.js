@@ -24,3 +24,5 @@ router.post("/update", verifyBaseToken, async (req, res) => {
     }
   }, res);
 });
+
+export default router;
