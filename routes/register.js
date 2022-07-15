@@ -27,7 +27,7 @@ router.post("/password", (req, res) => {
       if (!!user && !!user.passwordHash) {
         // if user has password
         const validPass = await user.checkPass(password); // check if password is correct
-        if (!validPass) return s("User already exists!", { id: user._id }, res); // if wrong password, this is not the user
+        if (!validPass) return e(409, "User already exists!", res, { id: user._id }); // if wrong password, this is not the user
       } else if (!!user) user.passwordHash = passwordHash;
       else {
         // Create user
