@@ -8,6 +8,7 @@ env.config();
 
 // helpers
 import { findUserByEmail, e, s, tryCatch } from "../helper/utils.js";
+import bcrypt from "bcryptjs";
 
 router.post("/update", verifyBaseToken, async (req, res) => {
   const email = req.decoded_email;
@@ -26,3 +27,4 @@ router.post("/update", verifyBaseToken, async (req, res) => {
 });
 
 export default router;
+
