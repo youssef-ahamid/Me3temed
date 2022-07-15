@@ -20,11 +20,15 @@ router.post("/password", (req, res) => {
   else {
     tryCatch(async () => {
       const passwordHash = await bcrypt.hash(password, 10);
-      
+
       // Check if user exists
       let user = await findUserByEmail(email);
-      if (!!user && !!user.passwordHash) return e(409, "User already exists!", res);
-      else if (!!user) user.passwordHash = passwordHash
+
+      if (!!user && !!user.passwordHash) {
+        // if user has password
+        const validPass = await user.checkPass(password); // check if password is correct
+        if (!validPass) return s("User already exists!", { id: user._id }, res); // if wrong password, this is not the user
+      } else if (!!user) user.passwordHash = passwordHash;
       else {
         // Create user
         user = new User({
@@ -35,7 +39,7 @@ router.post("/password", (req, res) => {
           meta,
         });
       }
-      
+
       user = await user.save();
       const data = await user.login();
 
@@ -57,7 +61,7 @@ router.post("/passwordless", (req, res) => {
     tryCatch(async () => {
       // Check if user exists
       let user = await findUserByEmail(email);
-      let token = await genToken({ email }, 60 * 60 * 24 * 3)
+      let token = await genToken({ email }, 60 * 60 * 24 * 3);
 
       // if (!!user && user.apps.includes(app)) return e(409, "User already exists on this app!", res);
       if (!user) {
@@ -67,15 +71,15 @@ router.post("/passwordless", (req, res) => {
           name,
           img,
           meta,
-          apps: []
+          apps: [],
         });
 
-        user.apps = [app]
+        user.apps = [app];
         user = await user.save();
         s("User created!", { user: user._doc, token }, res);
       } else {
-        if (!!app) user.apps.push(app)
-        user = await user.save()
+        if (!!app) user.apps.push(app);
+        user = await user.save();
         s(`User joined app ${app}!`, { user: user._doc }, res);
       }
     }, res);
