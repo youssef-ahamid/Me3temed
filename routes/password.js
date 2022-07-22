@@ -11,7 +11,7 @@ import { findUserByEmail, e, s, tryCatch } from "../helper/utils.js";
 import bcrypt from "bcryptjs";
 
 router.post("/update", verifyBaseToken, async (req, res) => {
-  const email = req.decoded_email;
+  const email = req.decoded_email.toLowerCase();
   tryCatch(async () => {
     let user = await findUserByEmail(email);
     if (!user) e(400, `user with email ${email} not found`, res);

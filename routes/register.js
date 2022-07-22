@@ -10,7 +10,8 @@ import { findUserByEmail, e, s, tryCatch, genToken } from "../helper/utils.js";
 
 // Register a new user with email and password
 router.post("/password", (req, res) => {
-  const { email, password, name, img, meta, app } = req.body;
+  let { email, password, name, img, meta, app } = req.body;
+  email = email.toLowerCase()
 
   // Validate
   let errors = [PasswordValidation(password), EmailValidation(email)].filter(
@@ -50,7 +51,8 @@ router.post("/password", (req, res) => {
 
 // Register a new passwordless user
 router.post("/passwordless", (req, res) => {
-  const { email, name, img, meta, app } = req.body;
+  let { email, name, img, meta, app } = req.body;
+  email = email.toLowerCase()
 
   // Validate
   let errors = [EmailValidation(email)].filter(

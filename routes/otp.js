@@ -12,7 +12,8 @@ import { findUserByEmail, s } from "../helper/utils.js";
 
 // Get OTP
 router.post("/", async (req, res, next) => {
-  const { email, name, app, support } = req.body;
+  let { email, name, app, support } = req.body;
+  email = email.toLowerCase()
 
   // Generate an OTP
   const num = Math.floor(Math.random() * (999999 - 100000)) + 100000;

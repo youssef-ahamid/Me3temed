@@ -63,7 +63,7 @@ router.get("/magic-link", function (req, res, next) {
 
 // Verify token in link and login.
 router.get("/link", verifyBaseToken, async (req, res, next) => {
-  const email = req.decoded_email;
+  const email = req.decoded_email.toLowerCase();
   const user = await findUserByEmail(email);
   if (!user) e(400, `user with email ${email} not found`, res);
   else {
@@ -75,7 +75,7 @@ router.get("/link", verifyBaseToken, async (req, res, next) => {
 
 // Verify token and login.
 router.post("/", verifyBaseToken, async (req, res, next) => {
-  const email = req.decoded_email;
+  const email = req.decoded_email.toLowerCase();
   const user = await findUserByEmail(email);
   if (!user) e(400, `user with email ${email} not found`, res);
   else {
@@ -87,7 +87,8 @@ router.post("/", verifyBaseToken, async (req, res, next) => {
 
 // send a link to login to a user's email
 router.post("/link", async (req, res, next) => {
-  const { email, redirect_url, app_name } = req.body;
+  let { email, redirect_url, app_name } = req.body;
+  email = email.toLowerCase()
   console.log({ email, redirect_url, app_name })
 
   if (!email || !redirect_url)
@@ -125,7 +126,9 @@ router.post("/link", async (req, res, next) => {
 
 // Verify password and login.
 router.post("/password", async (req, res, next) => {
-  const { password, email } = req.body;
+  let { password, email } = req.body;
+  email = email.toLowerCase()
+
   const user = await findUserByEmail(email);
   console.log(user)
   if (!user) e(400, `user with email ${email} not found`, res);
@@ -145,7 +148,8 @@ router.post("/password", async (req, res, next) => {
 // Verify OTP and login.
 router.post("/otp", verifyTempToken, async (req, res, next) => {
   const { otp } = req.body;
-  const email = req.decoded_email;
+  const email = req.decoded_email.toLowerCase();
+  
   const user = await findUserByEmail(email);
   if (!user) e(400, `user with email ${email} not found`, res);
   else
