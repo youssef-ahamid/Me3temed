@@ -1,1 +1,0 @@
-# E3temedny now
